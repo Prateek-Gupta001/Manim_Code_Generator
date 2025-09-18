@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { Providers } from "./providers";
+import { Providers } from "../providers";
 import { Inter } from "next/font/google";
-
+import Link from "next/link";
+import SignOutButton from "@/app/chat/SignOutButton";
 const inter =  Inter({
   subsets: ['latin'],
   display: 'swap'
@@ -24,6 +24,11 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={inter.className}>
+      <div className="rounded-sm h-30 font-semibold flex items-center justify-between text-4xl pl-3">
+        <div className="pl-15">Animate It 📽️</div>
+        <div className="">Cursor For Video Creation 😎</div> 
+        <SignOutButton />
+      </div>
         <Providers>
             {children}
         </Providers>
