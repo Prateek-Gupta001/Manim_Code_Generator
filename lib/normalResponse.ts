@@ -24,7 +24,7 @@ export default async function NormalResponse(messages: ResponseInput , client: O
         });
     console.log("Trying to upsert chat with chatId ", chatId)
     //TODO: update the messages variable here only and then upsert.
-    //@ts-ignore
+    //@ts-expect-error
     messages.push({
             "role": "assistant",
             "content": [

@@ -7,6 +7,8 @@ import { ObjectId } from "bson"; // or "mongodb"
 import { useSession } from "next-auth/react";
 
 
+export const runtime = 'edge' // Add just this line
+
 
 
 export default function Home()
@@ -41,6 +43,7 @@ export default function Home()
 //TODO: Rebuild the docker container without the env file. 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const searchParms = useSearchParams();
+    
     const prompt = searchParms.get('prompt')
     const [messages, setMessages] = useState<any[]>(()=>{
             if(prompt)

@@ -13,7 +13,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import axios from "axios";
-const fs = require("fs")
+import fs from "fs"
 
 
 const client = new OpenAI()

@@ -57,7 +57,7 @@ export default async function GenerateManimCode(messages: ResponseInput , client
     const code = codeWithoutFences.replace(/\u00A0/g, ' ');
 
     console.log("cleaned code is ", code)      
-    //@ts-ignore
+    //@ts-expect-error
     messages.push({
             "role": "assistant",
             "content": [
