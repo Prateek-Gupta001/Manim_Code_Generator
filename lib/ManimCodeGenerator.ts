@@ -53,6 +53,17 @@ export default async function GenerateManimCode(messages: ResponseInput , client
         { type: "web_search_preview" },
     ],
         });
+    const codeWithoutFences = response.output_text.replace(/^```python\s*/, '').replace(/```\s*$/, '').trim();
+    const code = codeWithoutFences.replace(/\u00A0/g, ' ');
+
+    console.log("cleaned code is ", code)      
+    //@ts-ignore
+    messages.push({
+            "role": "assistant",
+            "content": [
+                { "type": "output_text", "text": "code" + code }
+            ]
+            })
     try{await prisma.chat.upsert({
         where: {
             id: chatId

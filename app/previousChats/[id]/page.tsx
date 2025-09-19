@@ -9,52 +9,35 @@ import { useSession } from "next-auth/react";
 
 
 
-export default function Home()
-{
-
-    //just set a helper variable which is already set to null and if it does have a value then that value is shown .. so that can be used to show the
-    // previous chats.
-
-    
+export default function Home({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params); 
 
 
-//     {
-//   "messages": [
-//     {
-//       "role": "user",
-//       "content": [
-//         { "type": "input_text", "text": "Please animate a car driving round and round the planet earth and then the planet saturn appears" }
-//       ]
-//     }
-//   ]
-// }
-//Okay now here comes the main part in which we need to make the frontend so that there is the chat component for it. 
-//And now here are some observations:
-//1. We would want to build it so that there is always a loader there when a video is being processed/fetched from the backend. 
-//So just show a loader there after the last message is there. 
-//2. Now also the chat template/window/view is going to be compeletelt dependent on the messages variable which is a state variable. 
-//So basically you would wanna render the messages variable with the whole messasges variable that is eventually sent to the backend and also 
-//we need to have to send/append the backend code (the manim code itself) in the messages queue so that the gpt can understand what it had generated and 
-//what the user is talking about. 
-//So maybe just have a prop/component that takes in the messages variable and renders the messages list. 
-//Now also .. the video needs to be rendered. 
+//This page is just for showing the previous chats to the user. 
+//Its just going to have the messages variable all set in .. no one is going to set the prompt no nothing. 
+//TODO: Chats from the assistant's side are not getting saved .. only at the last time from the user's side.... just shift the prisma.upsert there. 
 //TODO: Rebuild the docker container without the env file. 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const searchParms = useSearchParams();
-    const prompt = searchParms.get('prompt')
-    const [messages, setMessages] = useState<any[]>(()=>{
-            if(prompt)
-            {   
-            return  [{
-                role: "user",
-                content: [
-                    { type: "input_text", text: prompt }
-                ]
-                }
-            ]
-            }
-        return [];
-    })
+    const [messages, setMessages] = useState<any>()
+    console.log("the id is ", id)
+    const chatId = id
+    console.log("chatId", chatId)
+    useEffect(()=>{
+        if(!chatId) return;
+        console.log("use effect running! ")
+        const res = axios.get(`http://localhost:3000/api/getPreviousChat?chatId=${chatId}`).then((data)=>{
+            const previousMessages = data.data.messages
+            setMessages(previousMessages)
+            setLoading(false)
+            console.log("data from axios is ", data.data.messages)
+            console.log("type of messages ", typeof(data.data.messages))
+            console.log("messages set!")
+        }).catch((err)=>{
+            console.log("axios error ", err)
+        })
+    },[chatId])
+    
+
     interface headersInterface
         {
             chatId: string, 
@@ -64,7 +47,6 @@ export default function Home()
     const [loading, setLoading] = useState(true)
     const [video, setVideo] = useState<any>(null)
     const [text, setText] = useState("")
-    const [chatId, setChatId] = useState<any>()
     const [isExpanded, setisExpanded] = useState(false)
     const [headersList, setheadersList] = useState<headersInterface[]>()
     const [hasError, setHasError] = useState<boolean>(false)
@@ -90,7 +72,7 @@ export default function Home()
             }
         })
         console.log("The headers list is ", headers)
-        setheadersList(headers)
+        setheadersList(headers.reverse())
         //This is a list of jsons containing the same userId and different chatIds. You need to create a new list of jsons .. containing the header 
         //element that is the first user message sent by the user .. and the chatIds for the same. 
         //just extract the first user messgage and set that as the header or the name of the banner for showing the previous chats. 
@@ -102,14 +84,10 @@ export default function Home()
         },
         [messages, loading, video]
     )
+    
     useEffect(()=>{
-        //🚨 IMPORTANT:: if there is a messages variable then don't make a new chatId .. because that means that the user is looking at an older chat. 
-        const id = new ObjectId().toHexString();
-        console.log("Creating a new chatId for this session", id) 
-        setChatId(id)
-    }, [prompt])
-    useEffect(()=>{
-        if (!prompt || !chatId) return;
+        if (!chatId) return;
+        if (!messages) return;
         if(messages[messages.length - 1].role == "assistant")
         {
             console.log("last role was assistant ... returning")
@@ -206,12 +184,9 @@ export default function Home()
             byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
         const byteArray = new Uint8Array(byteNumbers);
-        return new Blob([byteArray], { type: contentType })
+        return new Blob([byteArray], { type: contentType });
     };
-    if(prompt == null)
-    {
-        redirect("/chat")
-    }
+
         if(status == "loading")
       {
         return (  
@@ -248,11 +223,11 @@ export default function Home()
             </button>
         {/* Show the headers list if isExpanded is true. */}
         {isExpanded && headersList ? (headersList.map((element:headersInterface)=>{
-            return <>
+            return <div>
             <div  className="pt-7 mt-3 font-semibold text-md shadow-sm hover:cursor-pointer hover:bg-slate-200" onClick={()=>{
-                redirect(`/previousChats/${element.chatId}`)
+                redirect(`/previous-chat/${element.chatId}`)
             }}>{element.headerMessage.slice(0,25) + "..."}</div>
-            </>
+            </div>
         })): (<div></div>)}
 
         </div>

@@ -25,21 +25,20 @@ export default function Home() {
       </div>
   )
     }
-  if(status == "authenticated")
-  {
-    console.log("An authenticated user has arrived. His data is ", session)
-  }
-  if(status == "unauthenticated")
-  {
-    console.log("unauthenticated hence redirecting")
-    redirect("/api/auth/signin")
-  }
+  console.log("status ", status)    
   
   return (
   <>
     <div className="bg-white min-h-screen"> 
 <label className="block mt-30 text-7xl text-center font-bold text-gray-900">What do you wanna animate?</label>
-<textarea onChange={(e: any)=>{
+<textarea 
+  onKeyDown={(e)=> {
+    if(e.key == "Enter")
+    {
+      router.push(`/chatbox?prompt=${encodeURIComponent(prompt)}`)
+    }
+  }}
+  onChange={(e: any)=>{
   if(timeoutRef.current)
   {
     clearTimeout(timeoutRef.current)

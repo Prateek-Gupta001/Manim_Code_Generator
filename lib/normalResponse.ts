@@ -22,6 +22,15 @@ export default async function NormalResponse(messages: ResponseInput , client: O
         `,
             input: messages,
         });
+    console.log("Trying to upsert chat with chatId ", chatId)
+    //TODO: update the messages variable here only and then upsert.
+    //@ts-ignore
+    messages.push({
+            "role": "assistant",
+            "content": [
+                { "type": "output_text", "text": response.output_text }
+            ]
+            })
     try{await prisma.chat.upsert({
         where: {
             id: chatId

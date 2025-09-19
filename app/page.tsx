@@ -8,9 +8,11 @@ import { redirect } from "next/navigation";
 
 export default function Home() {
   const router = useRouter()
-  const {data: session, status} = useSession()
-  console.log("The data inside the session is ", session)
-  if(status == "loading")
+  let authVar = false
+  //REMOVE THE LOGIN/SIGNUP button if already signed in/authenticated .. just show the arrow button to redirect to /chat
+  const { data: session, status } = useSession()
+    console.log("The data inside the session is ", session)
+    if(status == "loading")
       {
         return (  
           <div role="status" className="flex items-center justify-center min-h-screen">
@@ -24,14 +26,10 @@ export default function Home() {
       }
     if(status == "authenticated")
     {
-      console.log("An authenticated user has arrived. His data is ", session)
+      console.log("Authenticated user! redirect to chat ")
+      authVar = true
+      console.log("authvar is ", authVar)
     }
-    if(status == "unauthenticated")
-    {
-      console.log("unauthenticated hence redirecting")
-      redirect("/api/auth/signin")
-    }
-
 
   return (
   <>
@@ -48,7 +46,11 @@ export default function Home() {
       </div>
     </div>
     <div className="flex justify-center">
-      <button type="button" className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 rounded-lg text-2xl font-semibold px-7 py-3.5 text-center mt-6 mb-4" onClick={() => {router.push("/api/auth/signin")}}>Login/Sign Up</button>
+    {authVar ? ( 
+      <button type="button" className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 rounded-lg text-2xl font-semibold px-7 py-3.5 text-center mt-6 mb-4" onClick={() => {router.push("/chat")}}>Go to Chat</button>
+):( 
+        <button type="button" className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 rounded-lg text-2xl font-semibold px-7 py-3.5 text-center mt-6 mb-4" onClick={() => {router.push("/api/auth/signin")}}>Login/Sign Up</button>
+)}
     </div>
     <div className="h-200 w-full text-center">
       THERE IS GOING TO BE A VIDEO HERE!
