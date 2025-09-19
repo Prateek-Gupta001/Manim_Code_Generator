@@ -1,9 +1,8 @@
 "use client"
 import axios from "axios"
-import { redirect, useSearchParams } from "next/navigation"
+import { redirect } from "next/navigation"
 import { use, useEffect, useRef, useState } from "react";
 import Chatbox from "@/components/Chatbox";
-import { ObjectId } from "bson"; // or "mongodb"
 import { useSession } from "next-auth/react";
 
 
@@ -216,11 +215,21 @@ export default function Home({ params }: { params: Promise<{ id: string }> }) {
             }} className="text-white bg-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-black-300 font-medium rounded-lg text-sm mt-10 p-2.5 text-center inline-flex items-center me-2 dark:bg-black-600 dark:hover:bg-black-700 dark:focus:ring-black-800">
             {!isExpanded ? (<svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-            </svg>):(<svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+            </svg>):(<div><svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0l4-4M1 5l4 4"/>
 </svg>
+</div>
 )}
-            </button>
+</button>
+        {isExpanded?(<button
+  className="bg-black mt-3 h-10 ml-5 mb-3 text-white text-sm px-2 py-1 rounded shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+  aria-label="Small black button"
+  onClick={()=>{
+    redirect("/chat")
+  }}
+>
+  New Chat
+</button>):(null)}
         {/* Show the headers list if isExpanded is true. */}
         {isExpanded && headersList ? (headersList.map((element:headersInterface)=>{
             return <div>

@@ -246,6 +246,15 @@ export default function Home()
 </svg>
 )}
             </button>
+        {isExpanded?(<button
+  className="bg-black mt-3 h-10 ml-5 mb-3 text-white text-sm px-2 py-1 rounded shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+  aria-label="Small black button"
+  onClick={()=>{
+    redirect("/chat")
+  }}
+>
+  New Chat
+</button>):(null)}
         {/* Show the headers list if isExpanded is true. */}
         {isExpanded && headersList ? (headersList.map((element:headersInterface)=>{
             return <>

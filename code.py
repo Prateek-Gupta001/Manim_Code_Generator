@@ -3,34 +3,60 @@ from manim import *
 
 class Animate(Scene):
     def construct(self):
-        # Draw the ground
-        ground = Line([-6, -2, 0], [6, -2, 0], color="#654321", stroke_width=8)
-        self.add(ground)
+        # Draw the monke's head
+        head = Circle(radius=1, color="#5C4037", fill_opacity=1).shift(UP*1.5)
+        face = Circle(radius=0.8, color="#A0522D", fill_opacity=1).shift(UP*1.6)
 
-        # Function to create a white stick-figure person
-        def get_person(shift_x, leg_sign=1, arm_sign=1):
-            head = Circle(radius=0.4, fill_color="#ffffff", fill_opacity=1, color="#aaaaaa", stroke_width=3).move_to([shift_x, -0.7, 0])
-            body = Line([shift_x, -1.1, 0], [shift_x, -1.8, 0], color="#ffffff", stroke_width=8)
-            left_leg = Line([shift_x, -1.8, 0], [shift_x - leg_sign * 0.35, -2, 0], color="#ffffff", stroke_width=8)
-            right_leg = Line([shift_x, -1.8, 0], [shift_x + leg_sign * 0.3, -2, 0], color="#ffffff", stroke_width=8)
-            left_arm = Line([shift_x, -1.3, 0], [shift_x - arm_sign * 0.4, -1.4, 0], color="#ffffff", stroke_width=8)
-            right_arm = Line([shift_x, -1.3, 0], [shift_x + arm_sign * 0.4, -1.2, 0], color="#ffffff", stroke_width=8)
-            return VGroup(head, body, left_leg, right_leg, left_arm, right_arm)
+        # Draw the monke's ears
+        left_ear = Circle(radius=0.3, color="#5C4037", fill_opacity=1).shift(LEFT*1.2 + UP*2)
+        right_ear = Circle(radius=0.3, color="#5C4037", fill_opacity=1).shift(RIGHT*1.2 + UP*2)
 
-        # Create initial person
-        person = get_person(-5, 1, -1)
-        self.add(person)
+        # Add inside of ears
+        left_ear_in = Circle(radius=0.17, color="#A0522D", fill_opacity=1).shift(LEFT*1.2 + UP*2)
+        right_ear_in = Circle(radius=0.17, color="#A0522D", fill_opacity=1).shift(RIGHT*1.2 + UP*2)
 
-        # Prepare running frames
-        run_poses = []
-        num_frames = 24
-        for i in range(num_frames):
-            sign = 1 if i % 2 == 0 else -1
-            run_poses.append(get_person(-5 + i * 0.45, leg_sign=sign, arm_sign=-sign))
+        # Draw the eyes
+        left_eye = Circle(radius=0.09, color=BLACK, fill_opacity=1).shift(LEFT*0.35 + UP*1.8)
+        right_eye = Circle(radius=0.09, color=BLACK, fill_opacity=1).shift(RIGHT*0.35 + UP*1.8)
+        
+        # Draw the smiling mouth
+        smile = Arc(radius=0.23, start_angle=PI, angle=PI/1.2, color=BLACK).shift(UP*1.3)
 
-        # Animate running
-        for i in range(num_frames):
-            self.play(Transform(person, run_poses[i]), run_time=0.07, rate_func=linear)
+        # Draw the body
+        body = Ellipse(width=1.6, height=2.2, color="#5C4037", fill_opacity=1).shift(DOWN*0.4)
 
+        # Draw arms
+        left_arm = ArcBetweenPoints(ORIGIN+LEFT*1.0+UP*0.8, LEFT*1.2+DOWN*0.5, angle=PI/2, color="#5C4037")
+        right_arm = ArcBetweenPoints(ORIGIN+RIGHT*1.0+UP*0.8, RIGHT*1.4+UP*0.2, angle=-PI/3, color="#5C4037")
+
+        # Draw hand holding fruit
+        hand = Circle(radius=0.18, color="#5C4037", fill_opacity=1).move_to(LEFT*1.18 + DOWN*0.7)
+        fruit = Circle(radius=0.16, color="#FF6347", fill_opacity=1).move_to(LEFT*1.18 + DOWN*0.88)
+        fruit_highlight = Dot(point=LEFT*1.08 + DOWN*0.82, color=WHITE).scale(0.4)
+
+        # Bite mark to show eating
+        bite = Arc(radius=0.08, start_angle=-PI/2, angle=PI, color="#A0522D", stroke_width=8
+                  ).move_to(LEFT*1.06 + DOWN*0.84)
+
+        # Animate monke smiling and eating fruit
+        monke = VGroup(
+            body, head, face, left_ear, right_ear, left_ear_in, right_ear_in, 
+            left_eye, right_eye, smile, left_arm, right_arm, hand, fruit, fruit_highlight
+        )
+
+        # Initial neutral mouth (not smiling)
+        mouth_neutral = Arc(radius=0.23, start_angle=0, angle=PI, color=BLACK).shift(UP*1.3)
+        self.play(Create(VGroup(body, head, face, left_ear, right_ear, left_ear_in, right_ear_in)))
+        self.play(FadeIn(VGroup(left_eye, right_eye, left_arm, right_arm, hand, fruit, fruit_highlight)))
+        self.play(Create(mouth_neutral))
         self.wait(0.5)
+
+        # Animate "eating" (bite appears, mouth turns to smile)
+        self.play(
+            FadeOut(mouth_neutral), 
+            Create(smile),
+            Create(bite),
+            run_time=1.2
+        )
+        self.wait(1.2)
 ```
